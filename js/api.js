@@ -11,7 +11,6 @@
 //         return [];
 //     }
 // }
-
 const BASE_URL = "https://6afad817730c1d152f329a32.mockapi.io";
 export async function request(path, options = {}) {
     const res = await fetch(BASE_URL + path, {
