@@ -44,3 +44,15 @@ export const deleteContent = (id) => {
         method: "DELETE"
     });
 };
+
+export const getComments =()=>{
+    return request("/comments");
+}
+export async function createComment(data){
+    return request("/comments",{
+        method:"POST",
+        body:JSON.stringify(data)
+    });
+}
+
+

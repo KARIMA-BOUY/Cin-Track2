@@ -1,5 +1,7 @@
 
 import { addFavorite, isFavorite } from "./favorite.js";
+import { getComments, createComment } from "./api.js";
+
 let movies = [];
 
 const catalogGrid = document.getElementById("catalog-grid");
@@ -42,7 +44,10 @@ function createCard(item) {
                 </p>
             </div>
         </div>
+        
     `;
+
+
 }
 export function renderCatalog(items) {
     if (!catalogGrid) return;
@@ -116,6 +121,74 @@ if (paginationContainer) {
         }
     });
 }
+
+async function loadComments(item) {
+    const commentsList = document.getElementById("comments-list");
+    commentsList.textContent = "Chargement...";
+    try {
+        const allComments = await getComments();
+        const comments = allComments.filter(function(comment) {
+            return String(comment.contentId) === String(item.id);
+        });
+        commentsList.innerHTML = "";
+        if (comments.length === 0) {
+            commentsList.textContent = "Aucun commentaire.";
+            return;
+        }
+        comments.forEach(function(comment) {
+            commentsList.innerHTML += `
+                <div class="bg-slate-800 p-3 rounded-lg mb-2">
+                    <p class="font-bold text-red-400">${comment.author}</p>
+                    <p class="text-white">${comment.text}</p>
+                    <small class="text-slate-400">
+                        ${new Date(comment.createdAt).toLocaleDateString()}
+                    </small>
+                </div>
+            `;
+        });
+    } catch (error) {
+        commentsList.textContent = "Erreur de chargement.";
+        console.log(error.message);
+    }
+}
+
+function setupComentForm(item){
+    const form = document.getElementById("comment-form");
+    const name = document.getElementById("comment-author");
+    const comment = document.getElementById("comment-text");
+    const msg = document.getElementById("comment-message");
+
+    name.value=localStorage.getItem("pseudo") || "";
+     
+    form.addEventListener("submit",async function(e){
+        e.preventDefault();
+
+        const author=name.value.trim();
+        const text=comment.value.trim();
+
+        if(author==="" ||text===""){
+            msg.textContent="Remplir tous les champs";
+            return;
+        }
+        try{
+             await createComment({
+                contentId: item.id,
+                author: author,
+                text: text,
+                createdAt: new Date()
+            });
+            localStorage.setItem("pseudo",author);
+            form.reset();
+            name.value=author;
+
+            msg.textContent="commentaire ajoute";
+            loadComments(item);
+        }catch(error){
+            msg.textContent="errur";
+        }
+    })
+ 
+}
 export function openModal(id, items) {
     const item = items.find(function(i) {
         return String(i.id) === String(id);
@@ -155,8 +228,39 @@ export function openModal(id, items) {
 
             </div>
         </div>
+       <div class="mt-6 border-t border-slate-700 pt-4">
+    <h3 class="text-lg font-bold mb-3">Commentaires</h3>
+
+    <div id="comments-list">
+        Chargement...
+    </div>
+
+    <form id="comment-form" class="mt-4 space-y-3">
+        <input
+            id="comment-author"
+            type="text"
+            placeholder="Votre nom"
+            class="w-full p-2 rounded bg-slate-800 text-white"
+        >
+
+        <textarea
+            id="comment-text"
+            placeholder="Votre commentaire"
+            class="w-full p-2 rounded bg-slate-800 text-white"
+        ></textarea>
+
+        <p id="comment-message"></p>
+
+        <button type="submit"
+            class="bg-red-600 text-white px-4 py-2 rounded">
+            Ajouter
+        </button>
+    </form>
+</div>
     `;
     modal.classList.remove("hidden");
+    loadComments(item);
+    setupComentForm(item);
 }
 export function closeModal() {
     if (modal) {
