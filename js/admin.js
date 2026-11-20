@@ -43,6 +43,28 @@ async function init(){
 }
 init();
 table.addEventListener("click",async function (e) {
+    if(e.target.classList.contains("edit")){
+        let id=e.target.dataset.id;
+        let item=items.find(i=>i.id==id);
+
+        if(!item)return;
+        
+        title.value=item.title;
+        type.value=item.type;
+        year.value=item.releaseYear;
+        Image.value=item.image;
+        genres.value=item.genres.join(", ");
+        duration.value=item.duration || "";
+        seasons.value=item.seasons || "";
+
+        editId=id;
+
+        formTitle.textContent="Modifier un contenu";
+        submitBtn.textContent="Modifier";
+
+        clear();
+        
+    }
     if(e.target.classList.contains("delete")){
         let id=e.target.dataset.id;
         let item;
@@ -97,8 +119,9 @@ function validateForm(){
     }
     if(type.value===""){
         document.getElementById("type-error").textContent="choisir un type";
+        valid=false;
     }
-    if(year.value<1990 || year.value > currentYaer || year.value===""){
+    if(year.value<1900|| year.value > currentYaer|| year.value===""){
         document.getElementById("year-error").textContent="annee invalid";
         valid=false;
     }
@@ -112,12 +135,12 @@ function validateForm(){
             valid=false;
         }
     }
-        if(type.value==="serie"){
-        if(duration.value==="" || duration.value <= 0){
-            document.getElementById("seasons-error").textContent="Nombre de saisons obligatoire";
-            valid=false;
-        }
+       if(type.value==="serie"){
+    if(seasons.value==="" || seasons.value <= 0){
+        document.getElementById("seasons-error").textContent="Nombre de saisons obligatoire";
+        valid=false;
     }
+}
     return valid;
 
 }
@@ -131,6 +154,7 @@ form.addEventListener("submit",async function (e) {
         if(editId===null){
             let newItem= await createContent(data);
             items.push(newItem);
+            message.textContent="ajout reussir";
     }else{
         let item=items.find(i=>i.id==editId);
         let updated={
