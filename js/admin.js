@@ -1,4 +1,4 @@
-import { getContents, deleteContent,updateContent} from "./api.js";
+import { getContents, deleteContent,updateContent,createContent} from "./api.js";
 const table=document.getElementById("content-table");
 const message=document.getElementById("message");
 const title=document.getElementById("title");
@@ -12,10 +12,8 @@ const genres=document.getElementById("genres");
 const duration=document.getElementById("duration");
 const seasons=document.getElementById("seasons");
 
+
 let editId=null;
-
-
-
 let items=[];
 function renderTable(items){
     table.innerHTML=items.map(item =>{
@@ -69,7 +67,6 @@ table.addEventListener("click",async function (e) {
     }
 });
 
-
 function getFormData(){
     return{
         title:title.value,
@@ -77,8 +74,8 @@ function getFormData(){
         releaseYear:Number(year.value),
         image:Image.value,
         genres:genres.value.split(",").map(g=>g.trim()),
-        duration:Number(duration.value),
-        seasons:Number(seasons.value)
+        duration: type.value==="film" ? Number(duration.value) : null,
+        seasons: type.value==="serie" ? Number(seasons.value) : null
     };
 }
 function clear(){
@@ -95,8 +92,11 @@ function validateForm(){
     let currentYaer=new Date().getFullYear();
 
     if(title.value===""){
-        document.getElementById("title-error").textContent="choisir un type";
+        document.getElementById("title-error").textContent="titre obligatoire";
         valid=false;
+    }
+    if(type.value===""){
+        document.getElementById("type-error").textContent="choisir un type";
     }
     if(year.value<1990 || year.value > currentYaer || year.value===""){
         document.getElementById("year-error").textContent="annee invalid";
@@ -106,5 +106,54 @@ function validateForm(){
         document.getElementById("image-error").textContent="URL invalide"
         valid=false;
     }
+    if(type.value==="film"){
+        if(duration.value==="" || duration.value <= 0){
+            document.getElementById("duration-error").textContent="duree obligatoire";
+            valid=false;
+        }
+    }
+        if(type.value==="serie"){
+        if(duration.value==="" || duration.value <= 0){
+            document.getElementById("seasons-error").textContent="Nombre de saisons obligatoire";
+            valid=false;
+        }
+    }
+    return valid;
+
 }
+form.addEventListener("submit",async function (e) {
+    e.preventDefault();
+    if(!validateForm()){
+        return;
+    }
+    let data=getFormData();
+    try{
+        if(editId===null){
+            let newItem= await createContent(data);
+            items.push(newItem);
+    }else{
+        let item=items.find(i=>i.id==editId);
+        let updated={
+            ...item,
+            ...getFormData()
+        };
+        let result=await updateContent(editId,updated);
+        for(let i=0;i<items.length;i++){
+            if(items[i].id==editId){
+                items[i]=result;
+            }
+        }
+        message.textContent="modification resussie";
+    }
+    renderTable(items);
+    form.reset();
+    editId=null;
+    formTitle.textContent="ajouter un contenu";
+    submitBtn.textContent="ajouter";
+
+    clear();
+     }catch(error){
+        message.textContent="erreur lors de l enregistrement";
+     }
+})
 
