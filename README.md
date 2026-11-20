@@ -1,38 +1,65 @@
-#  CinéTrack
+# CinéTrack
 
-**CinéTrack** est une application web moderne permettant de rechercher, filtrer et explorer des films et séries TV, avec une gestion complète des favoris et une interface responsive.
+## Présentation du projet
 
- **Démo en ligne :** https://cinetrack-green.vercel.app/
+CinéTrack est une application web qui permet de consulter un catalogue de films et de séries. Elle offre également des fonctionnalités d'administration et d'interaction avec les utilisateurs.
 
----
+## Fonctionnalités
 
-##  Fonctionnalités
+### 1. Catalogue
+- Afficher la liste des films et des séries.
+- Consulter les détails de chaque contenu.
+- Afficher les informations dans une fenêtre modale.
 
-- **Recherche instantanée :** Trouvez rapidement un film ou une série par titre.
-- **Filtres & Pagination :** Navigation fluide à travers le catalogue avec système de filtrage et pagination.
-- **Modale de détails :** Affichage des informations complètes (durée, nombre de saisons, réalisateur, synopsis, etc.).
-- **Gestion des favoris :** Ajoutez ou retirez vos titres préférés dans une liste dédiée (sauvegardée localement)[cite: 1].
-- **Design Responsive :** Interface adaptée aux mobiles, tablettes et ordinateurs.
+### 2. Administration
+- Consulter la liste des contenus.
+- Ajouter un film ou une série.
+- Modifier les informations d'un contenu.
+- Supprimer un contenu après confirmation.
+- Valider les données avant leur envoi.
 
----
+### 3. Commentaires
+- Afficher les commentaires associés à un film ou une série.
+- Ajouter un commentaire.
+- Afficher le nom de l'auteur, le texte et la date du commentaire.
+- Mémoriser le pseudo de l'utilisateur avec localStorage.
 
-##  Technologies utilisées
+## Technologies utilisées
 
-- **HTML5**
-- **Tailwind CSS** (Styling & Design responsive)
-- **JavaScript (ES6+)** (Modules JS, Manipulation du DOM, Fetch API)
-- **API Externe** (Récupération dynamique des données films/séries)
+- HTML5
+- Tailwind CSS
+- JavaScript ES6+
+- Fetch API
+- MockAPI
+- Async / Await
+- LocalStorage
+- Modules JavaScript (Import / Export)
 
----
-
-##  Structure du projet
+## Organisation du projet
 
 ```text
-CinéTrack/
-├── index.html          # Page principale
+CineTrack/
+│
+├── index.html
+├── admin.html
+├── css/
 ├── js/
-│   ├── main.js         # Point d'entrée et logique principale
-│   ├── api.js          # Appels API et récupération des données
-│   ├── ui.js           # Rendu de l'interface et gestion des modales
-│   └── favorite.js     # Gestion de la liste des favoris
-└── README.md           # Documentation du projet
+│   ├── api.js
+│   ├── main.js
+│   ├── ui.js
+│   └── favorite.js
+│
+└── README.md
+```
+
+## API REST
+
+Le projet utilise MockAPI pour gérer les données.
+
+Les principales opérations sont :
+- GET : récupérer les contenus et les commentaires.
+- POST : ajouter un contenu ou un commentaire.
+- PUT : modifier un contenu.
+- DELETE : supprimer un contenu.
+
+
